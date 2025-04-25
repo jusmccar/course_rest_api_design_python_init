@@ -6,17 +6,12 @@ on:
       - main
 
 jobs:
-  validate:
+  test:
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout student code
         uses: actions/checkout@v3
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-            python-version: '3.13'
 
       - name: Get test binary
         run: |
