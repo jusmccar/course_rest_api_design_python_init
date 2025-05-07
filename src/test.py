@@ -14,12 +14,12 @@ class TestBarking(TestCase):
         self.assertEqual(
             response.json(),
             [
-                {"id": 1, "message": "bark one!"},
-                {"id": 2, "message": "bark two!"},
-                {"id": 3, "message": "bark three!"},
+                {"id": 1, "message": "bark 1!"},
+                {"id": 2, "message": "bark 2!"},
+                {"id": 3, "message": "bark 3!"},
             ],
             (
                 "\n\nExpected response to be a list of barks like this:\n"
-                "[{'id':1, 'message': 'bark one!'}, {'id':2, 'message': 'bark two!'}, {'id':3, 'message': 'bark three!'}]"
+                "[{'id':1, 'message': 'bark 1!'}, {'id':2, 'message': 'bark 2!'}, {'id':3, 'message': 'bark 3!'}]"
             ),
         )
