@@ -1,13 +1,13 @@
 # REST API Design with Python
 
-This is the student starter repo for the [REST API Design with Python](https://codeling.dev/tracks/learn-backend-software-development/) course provided by [Codeling](https://codeling.dev).
+This is the student starter repo for the [REST API Design with Python](https://codeling.dev/courses/rest-api-design/) course provided by [Codeling](https://codeling.dev).
 
 ## How to use this repo
 
 1. Fork this repo and clone it to your computer.
 2. Access the course via the [Codeling Platform](https://app.codeling.dev)
 
-Your course progress will be seamlessly synced to your Codeling account.
+Your course progress will sync to your Codeling account seamlessly.
 
 ## More info
 
