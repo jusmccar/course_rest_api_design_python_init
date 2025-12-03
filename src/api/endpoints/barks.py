@@ -1,6 +1,7 @@
 from ninja import Router
 
 from api.schemas.bark_schemas import BarkSchemaOut
+from api.schemas.bark_schemas import ErrorSchemaOut
 
 router = Router()
 
@@ -12,7 +13,7 @@ def barks_list(request):
     """
     return [{"id": 1, "message": "bark 1!"}, {"id": 2, "message": "bark 2!"}, {"id":3, "message": "bark 3!"}]
 
-@router.get("/{bark_id}/", response={200: BarkSchemaOut, 404: dict})
+@router.get("/{bark_id}/", response={200: BarkSchemaOut, 404: ErrorSchemaOut})
 def get_bark(request, bark_id: int):
     """
     Bark detail endpoint that returns a single bark.
@@ -22,7 +23,7 @@ def get_bark(request, bark_id: int):
 
     return (200, {"id": bark_id, "message": f"bark {bark_id}!"})
 
-@router.delete("/{bark_id}/", response={204: None, 404: dict})
+@router.delete("/{bark_id}/", response={204: None, 404: ErrorSchemaOut})
 def delete_bark(request, bark_id: int):
     """
     Bark delete endpoint that deletes a single bark.
