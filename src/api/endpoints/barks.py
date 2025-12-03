@@ -19,3 +19,13 @@ def get_bark(request, bark_id: int):
         return (404, {"error": "Bark not found"})
 
     return (200, {"id": bark_id, "message": f"bark {bark_id}!"})
+
+@router.delete("/{bark_id}/", response={204: None, 404: dict})
+def delete_bark(request, bark_id: int):
+    """
+    Bark delete endpoint that deletes a single bark.
+    """
+    if bark_id not in (1, 2, 3):
+        return (404, {"error": "Bark not found"})
+
+    return (204, None)
