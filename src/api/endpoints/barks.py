@@ -58,11 +58,15 @@ def update_bark(request, bark_id: UUID, bark: BarkCreateUpdateSchemaIn):
     return (200, obj)
 
 @router.delete("/{bark_id}/", response={204: None, 404: ErrorSchemaOut})
-def delete_bark(request, bark_id: int):
+def delete_bark(request, bark_id: UUID):
     """
     Bark delete endpoint that deletes a single bark.
     """
-    if bark_id not in (1, 2, 3):
+    obj = BarkModel.objects.select_related("user").filter(id=bark_id).first()
+
+    if not obj:
         return (404, {"error": "Bark not found"})
+
+    obj.delete()
 
     return (204, None)
