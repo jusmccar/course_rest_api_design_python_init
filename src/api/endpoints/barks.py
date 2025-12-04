@@ -1,8 +1,7 @@
 from ninja import Router
 from uuid import UUID
 
-from api.schemas.bark_schemas import BarkCreateSchemaIn
-from api.schemas.bark_schemas import BarkSchemaIn
+from api.schemas.bark_schemas import BarkCreateUpdateSchemaIn
 from api.schemas.bark_schemas import BarkSchemaOut
 from api.schemas.bark_schemas import ErrorSchemaOut
 from core.models import BarkModel
@@ -19,7 +18,7 @@ def barks_list(request):
     return BarkModel.objects.select_related("user").all()
 
 @router.post("/", response={201: BarkSchemaOut})
-def create_bark(request, bark: BarkCreateSchemaIn):
+def create_bark(request, bark: BarkCreateUpdateSchemaIn):
     """
     Bark create endpoint that creates a single bark.
     """
@@ -34,22 +33,29 @@ def get_bark(request, bark_id: UUID):
     """
     Bark detail endpoint that returns a single bark.
     """
-    bark = BarkModel.objects.select_related("user").filter(id=bark_id).first()
+    obj = BarkModel.objects.select_related("user").filter(id=bark_id).first()
 
-    if not bark:
+    if not obj:
         return (404, {"error": "Bark not found"})
 
-    return (200, bark)
+    return (200, obj)
 
 @router.put("/{bark_id}/", response={200: BarkSchemaOut, 404: ErrorSchemaOut})
-def update_bark(request, bark_id: int, bark: BarkSchemaIn):
+def update_bark(request, bark_id: UUID, bark: BarkCreateUpdateSchemaIn):
     """
     Bark update endpoint that updates a single bark.
     """
-    if bark_id not in (1, 2, 3):
+    obj = BarkModel.objects.select_related("user").filter(id=bark_id).first()
+
+    if not obj:
         return (404, {"error": "Bark not found"})
 
-    return (200, {"id": bark_id, "message": bark.message})
+    for attr, value in bark.dict().items():
+        setattr(obj, attr, value)
+
+    obj.save()
+
+    return (200, obj)
 
 @router.delete("/{bark_id}/", response={204: None, 404: ErrorSchemaOut})
 def delete_bark(request, bark_id: int):

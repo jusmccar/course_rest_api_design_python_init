@@ -5,8 +5,8 @@ from pydantic import field_validator
 from api.schemas.user_schemas import DogUserSchemaOut
 from core.models import BarkModel
 
-class BarkCreateSchemaIn(ModelSchema):
-    """Schema for bark creations"""
+class BarkCreateUpdateSchemaIn(ModelSchema):
+    """Schema for bark requests"""
     message: str
 
     class Meta:
@@ -21,10 +21,6 @@ class BarkCreateSchemaIn(ModelSchema):
             raise ValueError("Message cannot be empty or just whitespace")
 
         return v
-
-class BarkSchemaIn(Schema):
-    """Schema for bark requests"""
-    message: str
 
 class BarkSchemaOut(ModelSchema):
     """Schema for bark responses"""
