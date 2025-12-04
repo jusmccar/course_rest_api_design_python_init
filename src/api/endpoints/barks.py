@@ -1,6 +1,7 @@
 from ninja import Router
 from uuid import UUID
 
+from api.schemas.bark_schemas import BarkCreateSchemaIn
 from api.schemas.bark_schemas import BarkSchemaIn
 from api.schemas.bark_schemas import BarkSchemaOut
 from api.schemas.bark_schemas import ErrorSchemaOut
@@ -18,7 +19,7 @@ def barks_list(request):
     return BarkModel.objects.select_related("user").all()
 
 @router.post("/", response={201: BarkSchemaOut})
-def create_bark(request, bark: BarkSchemaIn):
+def create_bark(request, bark: BarkCreateSchemaIn):
     """
     Bark create endpoint that creates a single bark.
     """
