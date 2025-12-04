@@ -28,3 +28,15 @@ def create_dog_user(request, dog_user: DogUserCreateSchemaIn):
     obj = DogUserModel.objects.create(**data)
 
     return (201, obj)
+
+@router.get("/{dog_user_id}/", response={200: DogUserSchemaOut, 404: ErrorSchemaOut})
+def get_dog_user(request, dog_user_id: UUID):
+    """
+    Dog user detail endpoint that returns a single dog user.
+    """
+    obj = DogUserModel.objects.filter(id=dog_user_id).first()
+
+    if not obj:
+        return (404, {"error": "Dog user not found"})
+
+    return (200, obj)
