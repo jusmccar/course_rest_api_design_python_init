@@ -1,15 +1,26 @@
 from ninja import ModelSchema
 from ninja import Schema
+from pydantic import field_validator
 
 from api.schemas.user_schemas import DogUserSchemaOut
 from core.models import BarkModel
 
 class BarkCreateSchemaIn(ModelSchema):
     """Schema for bark creations"""
+    message: str
 
     class Meta:
         model = BarkModel
         fields = ["message"]
+
+    @field_validator('message')
+    @classmethod
+    def validate_message_not_empty(cls, v: str) -> str:
+        """Ensure message isn't just whitespace"""
+        if not v.strip():
+            raise ValueError("Message cannot be empty or just whitespace")
+
+        return v
 
 class BarkSchemaIn(Schema):
     """Schema for bark requests"""
