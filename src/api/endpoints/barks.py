@@ -3,7 +3,7 @@ from uuid import UUID
 
 from api.schemas.bark_schemas import BarkCreateUpdateSchemaIn
 from api.schemas.bark_schemas import BarkSchemaOut
-from api.schemas.bark_schemas import ErrorSchemaOut
+from api.schemas.common_schemas import ErrorSchemaOut
 from core.models import BarkModel
 from core.models import DogUserModel
 

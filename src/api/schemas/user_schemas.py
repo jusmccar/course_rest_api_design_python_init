@@ -1,8 +1,15 @@
 from ninja import ModelSchema
 from core.models import DogUserModel
 
+class DogUserCreateSchemaIn(ModelSchema):
+    """Schema for dog user requests"""
+
+    class Meta:
+        model = DogUserModel
+        fields = ["username"]
+
 class DogUserSchemaOut(ModelSchema):
-    """Schema for DogUser responses"""
+    """Schema for dog user responses"""
 
     class Meta:
         model = DogUserModel

@@ -53,8 +53,3 @@ class BarkSchemaOut(ModelSchema):
     def resolve_updated_date(obj):
         """Resolve updated_date in DDMonYY format from updated_at field"""
         return obj.updated_at.strftime("%d%b%y")
-
-
-class ErrorSchemaOut(Schema):
-    """Schema for error responses"""
-    error : str
