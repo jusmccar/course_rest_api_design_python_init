@@ -14,14 +14,14 @@ def barks_list(request):
     """
     Bark list endpoint that returns a list of barks.
     """
-    return BarkModel.objects.all()
+    return BarkModel.objects.select_related("user").all()
 
 @router.get("/{bark_id}/", response={200: BarkSchemaOut, 404: ErrorSchemaOut})
 def get_bark(request, bark_id: UUID):
     """
     Bark detail endpoint that returns a single bark.
     """
-    bark = BarkModel.objects.filter(id=bark_id).first()
+    bark = BarkModel.objects.select_related("user").filter(id=bark_id).first()
 
     if not bark:
         return (404, {"error": "Bark not found"})
