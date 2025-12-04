@@ -4,9 +4,13 @@ from ninja import Schema
 from api.schemas.user_schemas import DogUserSchemaOut
 from core.models import BarkModel
 
-class BarkSchemaIn(Schema):
+class BarkSchemaIn(ModelSchema):
     """Schema for bark requests"""
     message: str
+
+    class Meta:
+        model = BarkModel
+        fields = ["message"]
 
 class BarkSchemaOut(ModelSchema):
     """Schema for bark responses"""
