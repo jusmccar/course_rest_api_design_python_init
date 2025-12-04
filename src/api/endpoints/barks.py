@@ -50,7 +50,9 @@ def update_bark(request, bark_id: UUID, bark: BarkCreateUpdateSchemaIn):
     if not obj:
         return (404, {"error": "Bark not found"})
 
-    for attr, value in bark.dict().items():
+    data = bark.dict()
+
+    for attr, value in data.items():
         setattr(obj, attr, value)
 
     obj.save()

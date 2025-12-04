@@ -20,9 +20,20 @@ class DogUserCreateSchemaIn(ModelSchema):
 
         return v
 
+class DogUserUpdateSchemaIn(ModelSchema):
+    """Schema for dog user updates"""
+    username: str | None = None
+    favorite_toy: str | None = None
+
+    class Meta:
+        model = DogUserModel
+        fields = ["username", "favorite_toy"]
+        fields_optional = ["username", "favorite_toy"]
+
+
 class DogUserSchemaOut(ModelSchema):
     """Schema for dog user responses"""
 
     class Meta:
         model = DogUserModel
-        fields = ["id", "username"]
+        fields = ["id", "username", "favorite_toy"]

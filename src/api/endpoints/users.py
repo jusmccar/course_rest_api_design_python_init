@@ -4,6 +4,7 @@ from uuid import UUID
 from api.schemas.common_schemas import ErrorSchemaOut
 from api.schemas.user_schemas import DogUserCreateSchemaIn
 from api.schemas.user_schemas import DogUserSchemaOut
+from api.schemas.user_schemas import DogUserUpdateSchemaIn
 from core.models import DogUserModel
 
 router = Router()
@@ -38,5 +39,24 @@ def get_dog_user(request, dog_user_id: UUID):
 
     if not obj:
         return (404, {"error": "Dog user not found"})
+
+    return (200, obj)
+
+@router.patch("/{dog_user_id}/", response={200: DogUserSchemaOut, 404: ErrorSchemaOut})
+def update_dog_user(request, dog_user_id: UUID, dog_user: DogUserUpdateSchemaIn):
+    """
+    Dog user update endpoint that updates a single dog user.
+    """
+    obj = DogUserModel.objects.filter(id=dog_user_id).first()
+
+    if not obj:
+        return (404, {"error": "Dog user not found"})
+
+    data = dog_user.dict(exclude_unset=True)
+
+    for attr, value in data.items():
+        setattr(obj, attr, value)
+
+    obj.save()
 
     return (200, obj)
