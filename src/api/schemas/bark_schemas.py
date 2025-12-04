@@ -1,6 +1,7 @@
 from ninja import ModelSchema
 from ninja import Schema
 
+from api.schemas.user_schemas import DogUserSchemaOut
 from core.models import BarkModel
 
 class BarkSchemaIn(Schema):
@@ -9,6 +10,8 @@ class BarkSchemaIn(Schema):
 
 class BarkSchemaOut(ModelSchema):
     """Schema for bark responses"""
+
+    user: DogUserSchemaOut
 
     class Meta:
         model = BarkModel
