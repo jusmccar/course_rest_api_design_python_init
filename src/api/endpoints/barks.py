@@ -1,4 +1,5 @@
 from ninja import Router
+from uuid import UUID
 
 from api.schemas.bark_schemas import BarkSchemaIn
 from api.schemas.bark_schemas import BarkSchemaOut
@@ -16,14 +17,16 @@ def barks_list(request):
     return BarkModel.objects.all()
 
 @router.get("/{bark_id}/", response={200: BarkSchemaOut, 404: ErrorSchemaOut})
-def get_bark(request, bark_id: int):
+def get_bark(request, bark_id: UUID):
     """
     Bark detail endpoint that returns a single bark.
     """
-    if bark_id not in (1, 2, 3):
+    bark = BarkModel.objects.filter(id=bark_id).first()
+
+    if not bark:
         return (404, {"error": "Bark not found"})
 
-    return (200, {"id": bark_id, "message": f"bark {bark_id}!"})
+    return (200, bark)
 
 @router.put("/{bark_id}/", response={200: BarkSchemaOut, 404: ErrorSchemaOut})
 def update_bark(request, bark_id: int, bark: BarkSchemaIn):
