@@ -10,7 +10,7 @@ from core.models import DogUserModel
 router = Router()
 
 
-@router.get("/", response=list[BarkSchemaOut])
+@router.get("/", response=list[BarkSchemaOut], auth=None)
 def barks_list(request):
     """
     Bark list endpoint that returns a list of barks.
@@ -28,7 +28,7 @@ def create_bark(request, bark: BarkCreateUpdateSchemaIn):
 
     return (201, obj)
 
-@router.get("/{bark_id}/", response={200: BarkSchemaOut, 404: ErrorSchemaOut})
+@router.get("/{bark_id}/", response={200: BarkSchemaOut, 404: ErrorSchemaOut}, auth=None)
 def get_bark(request, bark_id: UUID):
     """
     Bark detail endpoint that returns a single bark.

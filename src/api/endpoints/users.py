@@ -17,7 +17,7 @@ def dog_users_list(request):
     """
     return DogUserModel.objects.all()
 
-@router.post("/", response={201: DogUserSchemaOut, 400: ErrorSchemaOut})
+@router.post("/", response={201: DogUserSchemaOut, 400: ErrorSchemaOut}, auth=None)
 def create_dog_user(request, dog_user: DogUserCreateSchemaIn):
     """
     Dog user create endpoint that creates a single dog user.
