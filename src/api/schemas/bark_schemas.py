@@ -1,5 +1,4 @@
 from ninja import ModelSchema
-from ninja import Schema
 from pydantic import field_validator
 
 from api.schemas.user_schemas import DogUserSchemaOut
