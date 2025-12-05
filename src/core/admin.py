@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from core.models import AuthTokenModel
 from core.models import BarkModel
 from core.models import DogUserModel
 
@@ -10,3 +11,7 @@ class DogUserAdmin(admin.ModelAdmin):
 @admin.register(BarkModel)
 class BarkAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(AuthTokenModel)
+class AuthTokenAdmin(admin.ModelAdmin):
+    readonly_fields = ("key", "created")
