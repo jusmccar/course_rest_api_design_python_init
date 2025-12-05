@@ -1,4 +1,5 @@
 from ninja import ModelSchema
+from ninja import Schema
 from pydantic import field_validator
 
 from core.models import DogUserModel
@@ -24,12 +25,12 @@ class DogUserUpdateSchemaIn(ModelSchema):
     """Schema for dog user updates"""
     username: str | None = None
     favorite_toy: str | None = None
+    password: str
 
     class Meta:
         model = DogUserModel
-        fields = ["username", "favorite_toy"]
+        fields = ["username", "favorite_toy", "password"]
         fields_optional = ["username", "favorite_toy"]
-
 
 class DogUserSchemaOut(ModelSchema):
     """Schema for dog user responses"""
@@ -37,3 +38,8 @@ class DogUserSchemaOut(ModelSchema):
     class Meta:
         model = DogUserModel
         fields = ["id", "username", "favorite_toy"]
+
+class DogUserWithTokenSchemaOut(Schema):
+    """Schema for dog user with token response"""
+    user: DogUserSchemaOut
+    token: str

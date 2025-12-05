@@ -5,6 +5,8 @@ from api.schemas.common_schemas import ErrorSchemaOut
 from api.schemas.user_schemas import DogUserCreateSchemaIn
 from api.schemas.user_schemas import DogUserSchemaOut
 from api.schemas.user_schemas import DogUserUpdateSchemaIn
+from api.schemas.user_schemas import DogUserWithTokenSchemaOut
+from core.models import AuthTokenModel
 from core.models import DogUserModel
 
 router = Router()
@@ -17,7 +19,7 @@ def dog_users_list(request):
     """
     return DogUserModel.objects.all()
 
-@router.post("/", response={201: DogUserSchemaOut, 400: ErrorSchemaOut}, auth=None)
+@router.post("/", response={201: DogUserWithTokenSchemaOut, 400: ErrorSchemaOut}, auth=None)
 def create_dog_user(request, dog_user: DogUserCreateSchemaIn):
     """
     Dog user create endpoint that creates a single dog user.
@@ -26,9 +28,10 @@ def create_dog_user(request, dog_user: DogUserCreateSchemaIn):
         return (400, {"error": "Username already exists"})
 
     data = dog_user.dict()
-    obj = DogUserModel.objects.create(**data)
+    obj = DogUserModel.objects.create_user(**data)
+    token = AuthTokenModel.objects.create(user=obj)
 
-    return (201, obj)
+    return (201, {"user": obj, "token": token.key})
 
 @router.get("/{dog_user_id}/", response={200: DogUserSchemaOut, 404: ErrorSchemaOut})
 def get_dog_user(request, dog_user_id: UUID):
