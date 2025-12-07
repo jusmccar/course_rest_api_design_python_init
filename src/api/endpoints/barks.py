@@ -23,7 +23,7 @@ def create_bark(request, bark: BarkCreateUpdateSchemaIn):
     Bark create endpoint that creates a single bark.
     """
     data = bark.dict()
-    data['user_id'] = DogUserModel.objects.first().id
+    data['user_id'] = request.auth.id
     obj = BarkModel.objects.create(**data)
 
     return (201, obj)
