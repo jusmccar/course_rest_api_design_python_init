@@ -99,7 +99,7 @@ class AuthTokenModel(BaseModel):
         return timezone.now() >= self.expires
 
     def is_valid(self):
-        return self.is_active and not self.is_expired()
+        return self.is_active and not self.is_expired() and self.token_type == self.TOKEN_TYPE_ACCESS
 
     def __str__(self):
         return f"Token {self.key[:6]}... for {self.user.username}"
