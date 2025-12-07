@@ -7,10 +7,11 @@ from core.models import DogUserModel
 class DogUserCreateSchemaIn(ModelSchema):
     """Schema for dog user requests"""
     username: str
+    password: str
 
     class Meta:
         model = DogUserModel
-        fields = ["username"]
+        fields = ["username", "password"]
 
     @field_validator('username')
     @classmethod
@@ -25,11 +26,10 @@ class DogUserUpdateSchemaIn(ModelSchema):
     """Schema for dog user updates"""
     username: str | None = None
     favorite_toy: str | None = None
-    password: str
 
     class Meta:
         model = DogUserModel
-        fields = ["username", "favorite_toy", "password"]
+        fields = ["username", "favorite_toy"]
         fields_optional = ["username", "favorite_toy"]
 
 class DogUserSchemaOut(ModelSchema):
