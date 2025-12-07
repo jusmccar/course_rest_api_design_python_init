@@ -1,3 +1,5 @@
+from datetime import timedelta
+from django.utils import timezone
 from django.contrib.auth import authenticate
 from ninja import Router
 
@@ -19,6 +21,9 @@ def get_token(request, credentials: TokenRequestSchemaIn):
     if not user:
         return (401, {"error": "Invalid credentials"})
 
-    token, created = AuthTokenModel.objects.get_or_create(user=user)
+    AuthTokenModel.objects.filter(user=user).delete()
+    access_token = AuthTokenModel.objects.create(user=user, token_type=AuthTokenModel.TOKEN_TYPE_ACCESS)
+    refresh_token = AuthTokenModel.objects.create(user=user, token_type=AuthTokenModel.TOKEN_TYPE_REFRESH)
+    expires_in = int((access_token.expires - timezone.now()).total_seconds())
 
-    return (200, {"token": token.key})
+    return (200, {"access_token": access_token.key, "refresh_token": refresh_token.key, "expires_in": expires_in})
