@@ -64,7 +64,7 @@ def delete_bark(request, bark_id: UUID):
     """
     Bark delete endpoint that deletes a single bark.
     """
-    obj = BarkModel.objects.select_related("user").filter(id=bark_id).first()
+    obj = BarkModel.objects.select_related("user").filter(id=bark_id, user_id=request.auth.id).first()
 
     if not obj:
         return (404, {"error": "Bark not found"})
