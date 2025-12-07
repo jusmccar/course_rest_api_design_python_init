@@ -1,6 +1,9 @@
 from datetime import timedelta
-from django.utils import timezone
+import jwt
+
+from django.conf import settings
 from django.contrib.auth import authenticate
+from django.utils import timezone
 from ninja import Router
 
 from api.schemas.auth_schemas import RefreshTokenRequestSchemaIn
@@ -9,6 +12,7 @@ from api.schemas.auth_schemas import TokenRequestSchemaOut
 from api.schemas.common_schemas import ErrorSchemaOut
 from common.auth.jwt_auth import create_jwt
 from core.models import AuthTokenModel
+from core.models import DogUserModel
 
 router = Router()
 
@@ -62,6 +66,30 @@ def get_jwt_token(request, credentials: TokenRequestSchemaIn):
 
     access_token = create_jwt(user_id=user.id, token_type=AuthTokenModel.TOKEN_TYPE_ACCESS)
     refresh_token = create_jwt(user_id=user.id, token_type=AuthTokenModel.TOKEN_TYPE_REFRESH)
+    expires_in = int(timedelta(hours=4).total_seconds())
+
+    return (200, {"access_token": access_token, "refresh_token": refresh_token, "expires_in": expires_in})
+
+@router.post("/jwt-token/refresh/", response={200: TokenRequestSchemaOut, 401: ErrorSchemaOut}, auth=None)
+def refresh_jwt_token(request, credentials: RefreshTokenRequestSchemaIn):
+    try:
+        payload = jwt.decode(credentials.refresh_token, settings.JWT_SECRET, algorithms=["HS256"])
+    except jwt.DecodeError:
+        return (401, {"error": "Invalid refresh token"})
+    except jwt.ExpiredSignatureError:
+        return (401, {"error": "Expired refresh token"})
+
+    if payload.get("token_type") != "refresh":
+        return (401, {"error": "Invalid refresh token"})
+
+    user_id = payload.get("user_id")
+    obj = DogUserModel.objects.filter(id=user_id).first()
+
+    if not obj:
+        return (401, {"error": "Invalid refresh token"})
+
+    access_token = create_jwt(user_id=user_id, token_type=AuthTokenModel.TOKEN_TYPE_ACCESS)
+    refresh_token = create_jwt(user_id=user_id, token_type=AuthTokenModel.TOKEN_TYPE_REFRESH)
     expires_in = int(timedelta(hours=4).total_seconds())
 
     return (200, {"access_token": access_token, "refresh_token": refresh_token, "expires_in": expires_in})
