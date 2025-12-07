@@ -33,28 +33,21 @@ def create_dog_user(request, dog_user: DogUserCreateSchemaIn):
 
     return (201, {"user": obj, "token": token.key})
 
-@router.get("/{dog_user_id}/", response={200: DogUserSchemaOut, 404: ErrorSchemaOut})
-def get_dog_user(request, dog_user_id: UUID):
+@router.get("/me/", response={200: DogUserSchemaOut})
+def get_current_user(request):
     """
-    Dog user detail endpoint that returns a single dog user.
+    Dog user detail endpoint that returns the currently authenticated dog user.
     """
-    obj = DogUserModel.objects.filter(id=dog_user_id).first()
-
-    if not obj:
-        return (404, {"error": "Dog user not found"})
+    obj = request.auth
 
     return (200, obj)
 
-@router.patch("/{dog_user_id}/", response={200: DogUserSchemaOut, 400: ErrorSchemaOut, 404: ErrorSchemaOut})
-def update_dog_user(request, dog_user_id: UUID, dog_user: DogUserUpdateSchemaIn):
+@router.patch("/me/", response={200: DogUserSchemaOut, 400: ErrorSchemaOut})
+def update_me(request, dog_user: DogUserUpdateSchemaIn):
     """
-    Dog user update endpoint that updates a single dog user.
+    Dog user update endpoint that updates the currently authenticated dog user.
     """
-    obj = DogUserModel.objects.filter(id=dog_user_id).first()
-
-    if not obj:
-        return (404, {"error": "Dog user not found"})
-
+    obj = request.auth
     data = dog_user.dict(exclude_unset=True)
 
     if "username" in data and data["username"] != obj.username and DogUserModel.objects.filter(username=data["username"]).exists():
@@ -64,5 +57,17 @@ def update_dog_user(request, dog_user_id: UUID, dog_user: DogUserUpdateSchemaIn)
         setattr(obj, attr, value)
 
     obj.save()
+
+    return (200, obj)
+
+@router.get("/{dog_user_id}/", response={200: DogUserSchemaOut, 404: ErrorSchemaOut})
+def get_dog_user(request, dog_user_id: UUID):
+    """
+    Dog user detail endpoint that returns a single dog user.
+    """
+    obj = DogUserModel.objects.filter(id=dog_user_id).first()
+
+    if not obj:
+        return (404, {"error": "Dog user not found"})
 
     return (200, obj)
