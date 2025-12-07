@@ -3,6 +3,27 @@ import time
 import jwt
 
 from django.conf import settings
+from ninja.security import HttpBearer
+
+from core.models import DogUserModel
+
+class JWTAuth(HttpBearer):
+    def authenticate(self, request, token):
+        try:
+            payload = jwt.decode(token, settings.JWT_SECRET, algorithms=["HS256"])
+        except jwt.PyJWTError:
+            return None
+
+        if payload.get("token_type") != "access":
+            return None
+
+        user_id = payload.get("user_id")
+        obj = DogUserModel.objects.filter(id=user_id).first()
+
+        if not obj:
+            return None
+
+        return obj
 
 def create_jwt(user_id, token_type):
     """
