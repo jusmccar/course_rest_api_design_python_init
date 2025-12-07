@@ -45,7 +45,7 @@ def update_bark(request, bark_id: UUID, bark: BarkCreateUpdateSchemaIn):
     """
     Bark update endpoint that updates a single bark.
     """
-    obj = BarkModel.objects.select_related("user").filter(id=bark_id).first()
+    obj = BarkModel.objects.select_related("user").filter(id=bark_id, user_id=request.auth.id).first()
 
     if not obj:
         return (404, {"error": "Bark not found"})
