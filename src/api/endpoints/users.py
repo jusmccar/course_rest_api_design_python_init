@@ -1,6 +1,7 @@
 from ninja import Router
 from uuid import UUID
 
+from api.logic.user_logic import handle_create_dog_user
 from api.logic.user_logic import handle_dog_users_list
 from api.schemas.common_schemas import ErrorSchemaOut
 from api.schemas.user_schemas import DogUserCreateSchemaIn
@@ -23,18 +24,16 @@ def dog_users_list(request):
     return 200, users
 
 @router.post("/", response={201: DogUserWithTokenSchemaOut, 400: ErrorSchemaOut}, auth=None)
-def create_dog_user(request, dog_user: DogUserCreateSchemaIn):
+def create_dog_user(request, user: DogUserCreateSchemaIn):
     """
     Dog user create endpoint that creates a single dog user.
     """
-    if DogUserModel.objects.filter(username=dog_user.username).exists():
-        return (400, {"error": "Username already exists"})
+    try:
+        user_obj, token = handle_create_dog_user(username=user.username, password=user.password)
+    except ValueError as e:
+        return (400, {"error": str(e)})
 
-    data = dog_user.dict()
-    obj = DogUserModel.objects.create_user(**data)
-    token = AuthTokenModel.objects.create(user=obj)
-
-    return (201, {"user": obj, "token": token.key})
+    return (201, {"user": user_obj, "token": token.key})
 
 @router.get("/me/", response={200: DogUserSchemaOut})
 def get_current_user(request):
