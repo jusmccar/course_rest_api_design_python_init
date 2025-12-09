@@ -21,7 +21,7 @@ def dog_users_list(request):
     """
     users = handle_dog_users_list()
 
-    return 200, users
+    return (200, users)
 
 @router.post("/", response={201: DogUserWithTokenSchemaOut, 400: ErrorSchemaOut}, auth=None)
 def create_dog_user(request, user: DogUserCreateSchemaIn):
