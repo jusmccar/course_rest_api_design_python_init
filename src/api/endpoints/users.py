@@ -27,6 +27,7 @@ def dog_users_list(request):
 
     return (200, users)
 
+
 @router.post("/", response={201: DogUserWithTokenSchemaOut, 409: ErrorSchemaOut}, auth=None)
 def create_dog_user(request, user: DogUserCreateSchemaIn):
     """
@@ -41,6 +42,7 @@ def create_dog_user(request, user: DogUserCreateSchemaIn):
 
     return (201, {"user": user_obj, "token": token.key})
 
+
 @router.get("/me/", response={200: DogUserSchemaOut})
 def get_current_user(request):
     """
@@ -50,6 +52,7 @@ def get_current_user(request):
     user_obj = handle_get_current_user(user_obj)
 
     return (200, user_obj)
+
 
 @router.patch("/me/", response={200: DogUserSchemaOut, 409: ErrorSchemaOut})
 def update_me(request, user: DogUserUpdateSchemaIn):
@@ -67,6 +70,7 @@ def update_me(request, user: DogUserUpdateSchemaIn):
         return (status_code, error_response)
 
     return (200, user_obj)
+
 
 @router.get("/{user_id}/", response={200: DogUserSchemaOut, 404: ErrorSchemaOut})
 def get_dog_user(request, user_id: UUID):

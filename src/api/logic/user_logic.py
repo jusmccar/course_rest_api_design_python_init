@@ -10,6 +10,7 @@ def handle_dog_users_list():
     """
     return DogUserModel.objects.all()
 
+
 def handle_create_dog_user(username: str, password: str) -> tuple[DogUserModel, AuthTokenModel]:
     """
     Creates a single dog user.
@@ -22,11 +23,13 @@ def handle_create_dog_user(username: str, password: str) -> tuple[DogUserModel, 
 
     return (user, token)
 
+
 def handle_get_current_user(user: DogUserModel) -> DogUserModel:
     """
     Returns the currently authenticated dog user.
     """
     return user
+
 
 def handle_update_me(user: DogUserModel, data: dict) -> DogUserModel:
     """
@@ -41,6 +44,7 @@ def handle_update_me(user: DogUserModel, data: dict) -> DogUserModel:
     user.save()
 
     return user
+
 
 def handle_get_dog_user(user_id: int) -> DogUserModel:
     """
