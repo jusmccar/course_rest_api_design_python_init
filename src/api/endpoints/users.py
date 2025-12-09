@@ -1,6 +1,7 @@
 from ninja import Router
 from uuid import UUID
 
+from api.logic.exceptions import get_error_response
 from api.logic.user_logic import handle_create_dog_user
 from api.logic.user_logic import handle_dog_users_list
 from api.schemas.common_schemas import ErrorSchemaOut
@@ -23,15 +24,17 @@ def dog_users_list(request):
 
     return (200, users)
 
-@router.post("/", response={201: DogUserWithTokenSchemaOut, 400: ErrorSchemaOut}, auth=None)
+@router.post("/", response={201: DogUserWithTokenSchemaOut, 409: ErrorSchemaOut}, auth=None)
 def create_dog_user(request, user: DogUserCreateSchemaIn):
     """
     Dog user create endpoint that creates a single dog user.
     """
     try:
         user_obj, token = handle_create_dog_user(username=user.username, password=user.password)
-    except ValueError as e:
-        return (400, {"error": str(e)})
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
+
+        return (status_code, error_response)
 
     return (201, {"user": user_obj, "token": token.key})
 
