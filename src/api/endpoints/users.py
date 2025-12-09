@@ -4,6 +4,7 @@ from uuid import UUID
 from api.logic.exceptions import get_error_response
 from api.logic.user_logic import handle_create_dog_user
 from api.logic.user_logic import handle_dog_users_list
+from api.logic.user_logic import handle_update_me
 from api.schemas.common_schemas import ErrorSchemaOut
 from api.schemas.user_schemas import DogUserCreateSchemaIn
 from api.schemas.user_schemas import DogUserSchemaOut
@@ -47,23 +48,22 @@ def get_current_user(request):
 
     return (200, obj)
 
-@router.patch("/me/", response={200: DogUserSchemaOut, 400: ErrorSchemaOut})
-def update_me(request, dog_user: DogUserUpdateSchemaIn):
+@router.patch("/me/", response={200: DogUserSchemaOut, 409: ErrorSchemaOut})
+def update_me(request, user: DogUserUpdateSchemaIn):
     """
     Dog user update endpoint that updates the currently authenticated dog user.
     """
-    obj = request.auth
-    data = dog_user.dict(exclude_unset=True)
+    user_obj = request.auth
+    data = user.dict(exclude_unset=True)
 
-    if "username" in data and data["username"] != obj.username and DogUserModel.objects.filter(username=data["username"]).exists():
-        return (400, {"error": "Username already exists"})
+    try:
+        user_obj = handle_update_me(user_obj, data)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
 
-    for attr, value in data.items():
-        setattr(obj, attr, value)
+        return (status_code, error_response)
 
-    obj.save()
-
-    return (200, obj)
+    return (200, user_obj)
 
 @router.get("/{dog_user_id}/", response={200: DogUserSchemaOut, 404: ErrorSchemaOut})
 def get_dog_user(request, dog_user_id: UUID):
