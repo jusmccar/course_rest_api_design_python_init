@@ -4,6 +4,7 @@ from uuid import UUID
 from api.logic.exceptions import get_error_response
 from api.logic.user_logic import handle_create_dog_user
 from api.logic.user_logic import handle_dog_users_list
+from api.logic.user_logic import handle_get_current_user
 from api.logic.user_logic import handle_get_dog_user
 from api.logic.user_logic import handle_update_me
 from api.schemas.common_schemas import ErrorSchemaOut
@@ -45,9 +46,10 @@ def get_current_user(request):
     """
     Dog user detail endpoint that returns the currently authenticated dog user.
     """
-    obj = request.auth
+    user_obj = request.auth
+    user_obj = handle_get_current_user(user_obj)
 
-    return (200, obj)
+    return (200, user_obj)
 
 @router.patch("/me/", response={200: DogUserSchemaOut, 409: ErrorSchemaOut})
 def update_me(request, user: DogUserUpdateSchemaIn):

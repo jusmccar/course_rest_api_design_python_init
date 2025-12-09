@@ -22,6 +22,9 @@ def handle_create_dog_user(username: str, password: str) -> tuple[DogUserModel, 
 
     return (user, token)
 
+def handle_get_current_user(user: DogUserModel) -> DogUserModel:
+    return user
+
 def handle_update_me(user: DogUserModel, data: dict) -> DogUserModel:
     if "username" in data and data["username"] != user.username and DogUserModel.objects.filter(username=data["username"]).exists():
         raise DuplicateResourceError("Username already exists")
