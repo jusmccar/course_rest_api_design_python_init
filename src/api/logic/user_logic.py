@@ -16,7 +16,7 @@ def handle_create_dog_user(username: str, password: str) -> tuple[DogUserModel, 
     if DogUserModel.objects.filter(username=username).exists():
         raise DuplicateResourceError("Username already exists")
 
-    obj = DogUserModel.objects.create_user(username=username, password=password)
-    token = AuthTokenModel.objects.create(user=obj)
+    user = DogUserModel.objects.create_user(username=username, password=password)
+    token = AuthTokenModel.objects.create(user=user)
 
-    return (obj, token)
+    return (user, token)
