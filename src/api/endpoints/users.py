@@ -4,6 +4,7 @@ from uuid import UUID
 from api.logic.exceptions import get_error_response
 from api.logic.user_logic import handle_create_dog_user
 from api.logic.user_logic import handle_dog_users_list
+from api.logic.user_logic import handle_get_dog_user
 from api.logic.user_logic import handle_update_me
 from api.schemas.common_schemas import ErrorSchemaOut
 from api.schemas.user_schemas import DogUserCreateSchemaIn
@@ -65,14 +66,16 @@ def update_me(request, user: DogUserUpdateSchemaIn):
 
     return (200, user_obj)
 
-@router.get("/{dog_user_id}/", response={200: DogUserSchemaOut, 404: ErrorSchemaOut})
-def get_dog_user(request, dog_user_id: UUID):
+@router.get("/{user_id}/", response={200: DogUserSchemaOut, 404: ErrorSchemaOut})
+def get_dog_user(request, user_id: UUID):
     """
     Dog user detail endpoint that returns a single dog user.
     """
-    obj = DogUserModel.objects.filter(id=dog_user_id).first()
+    try:
+        user_obj = handle_get_dog_user(user_id)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
 
-    if not obj:
-        return (404, {"error": "Dog user not found"})
+        return (status_code, error_response)
 
-    return (200, obj)
+    return (200, user_obj)

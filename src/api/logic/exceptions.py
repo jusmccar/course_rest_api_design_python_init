@@ -3,6 +3,11 @@ class LogicError(Exception):
     status_code = 500
 
 
+class ResourceNotFoundError(LogicError):
+    """Raised when attempting to access a resource that does not exist"""
+    status_code = 404
+
+
 class DuplicateResourceError(LogicError):
     """Raised when attempting to create a resource that already exists"""
     status_code = 409
