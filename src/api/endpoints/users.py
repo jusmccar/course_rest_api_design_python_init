@@ -1,6 +1,7 @@
 from ninja import Router
 from uuid import UUID
 
+from api.logic.user_logic import handle_dog_users_list
 from api.schemas.common_schemas import ErrorSchemaOut
 from api.schemas.user_schemas import DogUserCreateSchemaIn
 from api.schemas.user_schemas import DogUserSchemaOut
@@ -17,7 +18,9 @@ def dog_users_list(request):
     """
     Dog users list endpoint that returns a list of dog users.
     """
-    return DogUserModel.objects.all()
+    users = handle_dog_users_list()
+
+    return 200, users
 
 @router.post("/", response={201: DogUserWithTokenSchemaOut, 400: ErrorSchemaOut}, auth=None)
 def create_dog_user(request, dog_user: DogUserCreateSchemaIn):
