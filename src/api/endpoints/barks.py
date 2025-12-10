@@ -1,8 +1,10 @@
 from ninja import Router
 from uuid import UUID
 
+from api.logic.exceptions import get_error_response
 from api.logic.bark_logic import handle_barks_list
 from api.logic.bark_logic import handle_create_bark
+from api.logic.bark_logic import handle_get_bark
 from api.schemas.bark_schemas import BarkCreateUpdateSchemaIn
 from api.schemas.bark_schemas import BarkSchemaOut
 from api.schemas.common_schemas import ErrorSchemaOut
@@ -38,12 +40,14 @@ def get_bark(request, bark_id: UUID):
     """
     Bark detail endpoint that returns a single bark.
     """
-    obj = BarkModel.objects.select_related("user").filter(id=bark_id).first()
+    try:
+        bark_obj = handle_get_bark(bark_id)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
 
-    if not obj:
-        return (404, {"error": "Bark not found"})
+        return (status_code, error_response)
 
-    return (200, obj)
+    return (200, bark_obj)
 
 
 @router.put("/{bark_id}/", response={200: BarkSchemaOut, 404: ErrorSchemaOut})
