@@ -7,6 +7,7 @@ from django.utils import timezone
 from ninja import Router
 
 from api.logic.auth_logic import handle_get_token
+from api.logic.auth_logic import handle_get_jwt_token
 from api.logic.auth_logic import handle_refresh_token
 from api.logic.exceptions import get_error_response
 from api.schemas.auth_schemas import RefreshTokenRequestSchemaIn
@@ -60,16 +61,17 @@ def get_jwt_token(request, credentials: TokenRequestSchemaIn):
     """
     JWT token endpoint that returns a JWT token.
     """
-    user = authenticate(username=credentials.username, password=credentials.password)
+    username = credentials.username
+    password = credentials.password
 
-    if not user:
-        return (401, {"error": "Invalid credentials"})
+    try:
+        data = handle_get_jwt_token(username, password)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
 
-    access_token = create_jwt(user_id=user.id, token_type=AuthTokenModel.TOKEN_TYPE_ACCESS)
-    refresh_token = create_jwt(user_id=user.id, token_type=AuthTokenModel.TOKEN_TYPE_REFRESH)
-    expires_in = int(timedelta(hours=4).total_seconds())
+        return (status_code, error_response)
 
-    return (200, {"access_token": access_token, "refresh_token": refresh_token, "expires_in": expires_in})
+    return (200, data)
 
 
 @router.post("/jwt-token/refresh/", response={200: TokenRequestSchemaOut, 401: ErrorSchemaOut}, auth=None)
