@@ -21,3 +21,12 @@ def handle_get_bark(bark_id: str) -> BarkModel:
         raise ResourceNotFoundError("Bark not found")
 
     return bark
+
+
+def handle_delete_bark(bark_id: str, user: DogUserModel) -> None:
+    bark = BarkModel.objects.select_related("user").filter(id=bark_id, user_id=user.id).first()
+
+    if not bark:
+        raise ResourceNotFoundError("Bark not found")
+
+    bark.delete()

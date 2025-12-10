@@ -4,6 +4,7 @@ from uuid import UUID
 from api.logic.exceptions import get_error_response
 from api.logic.bark_logic import handle_barks_list
 from api.logic.bark_logic import handle_create_bark
+from api.logic.bark_logic import handle_delete_bark
 from api.logic.bark_logic import handle_get_bark
 from api.schemas.bark_schemas import BarkCreateUpdateSchemaIn
 from api.schemas.bark_schemas import BarkSchemaOut
@@ -75,11 +76,13 @@ def delete_bark(request, bark_id: UUID):
     """
     Bark delete endpoint that deletes a single bark.
     """
-    obj = BarkModel.objects.select_related("user").filter(id=bark_id, user_id=request.auth.id).first()
+    user_obj = request.auth
 
-    if not obj:
-        return (404, {"error": "Bark not found"})
+    try:
+        handle_delete_bark(bark_id, user_obj)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
 
-    obj.delete()
+        return (status_code, error_response)
 
     return (204, None)
