@@ -32,7 +32,7 @@ def create_dog_user(request, user: DogUserCreateSchemaIn):
     Dog user create endpoint that creates a single dog user.
     """
     try:
-        user_obj, token = handle_create_dog_user(username=user.username, password=user.password)
+        user_obj, token = handle_create_dog_user(user.username, user.password)
     except Exception as e:
         status_code, error_response = get_error_response(e)
 
