@@ -12,8 +12,6 @@ from api.schemas.user_schemas import DogUserCreateSchemaIn
 from api.schemas.user_schemas import DogUserSchemaOut
 from api.schemas.user_schemas import DogUserUpdateSchemaIn
 from api.schemas.user_schemas import DogUserWithTokenSchemaOut
-from core.models import AuthTokenModel
-from core.models import DogUserModel
 
 router = Router()
 
