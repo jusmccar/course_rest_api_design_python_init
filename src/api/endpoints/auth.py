@@ -76,6 +76,9 @@ def get_jwt_token(request, credentials: TokenRequestSchemaIn):
 
 @router.post("/jwt-token/refresh/", response={200: TokenRequestSchemaOut, 401: ErrorSchemaOut}, auth=None)
 def refresh_jwt_token(request, credentials: RefreshTokenRequestSchemaIn):
+    """
+    JWT token endpoint that refreshes a JWT token.
+    """
     try:
         payload = jwt.decode(credentials.refresh_token, settings.JWT_SECRET, algorithms=["HS256"])
     except jwt.DecodeError:
