@@ -1,6 +1,7 @@
 from ninja import Router
 from uuid import UUID
 
+from api.logic.bark_logic import handle_barks_list
 from api.logic.bark_logic import handle_create_bark
 from api.schemas.bark_schemas import BarkCreateUpdateSchemaIn
 from api.schemas.bark_schemas import BarkSchemaOut
@@ -15,7 +16,9 @@ def barks_list(request):
     """
     Bark list endpoint that returns a list of barks.
     """
-    return BarkModel.objects.select_related("user").all()
+    barks = handle_barks_list()
+
+    return barks
 
 
 @router.post("/", response={201: BarkSchemaOut})
