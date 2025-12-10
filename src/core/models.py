@@ -12,6 +12,8 @@ class BaseModel(models.Model):
     """Contains common fields intended to be inherited by all models"""
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
@@ -33,8 +35,6 @@ class BarkModel(BaseModel):
     """Custom bark model for barks."""
 
     message = models.CharField(max_length=200)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(
         DogUserModel,
         on_delete=models.CASCADE,
@@ -63,7 +63,6 @@ class AuthTokenModel(BaseModel):
     user = models.ForeignKey(
         to=DogUserModel, related_name="auth_tokens", on_delete=models.CASCADE
     )
-    created = models.DateTimeField(auto_now_add=True)
     expires = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     token_type = models.CharField(
