@@ -6,6 +6,8 @@ from django.contrib.auth import authenticate
 from django.utils import timezone
 from ninja import Router
 
+from api.logic.auth_logic import handle_get_token
+from api.logic.exceptions import get_error_response
 from api.schemas.auth_schemas import RefreshTokenRequestSchemaIn
 from api.schemas.auth_schemas import TokenRequestSchemaIn
 from api.schemas.auth_schemas import TokenRequestSchemaOut
@@ -22,17 +24,18 @@ def get_token(request, credentials: TokenRequestSchemaIn):
     """
     Token endpoint that returns a token.
     """
-    user = authenticate(username=credentials.username, password=credentials.password)
+    username = credentials.username
+    password = credentials.password
 
-    if not user:
-        return (401, {"error": "Invalid credentials"})
+    try:
+        data = handle_get_token(username, password)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
 
-    AuthTokenModel.objects.filter(user=user).delete()
-    access_token = AuthTokenModel.objects.create(user=user, token_type=AuthTokenModel.TOKEN_TYPE_ACCESS)
-    refresh_token = AuthTokenModel.objects.create(user=user, token_type=AuthTokenModel.TOKEN_TYPE_REFRESH)
-    expires_in = int((access_token.expires - timezone.now()).total_seconds())
+        return (status_code, error_response)
 
-    return (200, {"access_token": access_token.key, "refresh_token": refresh_token.key, "expires_in": expires_in})
+    return (200, data)
+
 
 @router.post("/token/refresh/", response={200: TokenRequestSchemaOut, 401: ErrorSchemaOut}, auth=None)
 def refresh_token(request, credentials: RefreshTokenRequestSchemaIn):
@@ -54,6 +57,7 @@ def refresh_token(request, credentials: RefreshTokenRequestSchemaIn):
 
     return (200, {"access_token": access_token.key, "refresh_token": refresh_token.key, "expires_in": expires_in})
 
+
 @router.post("/jwt-token/", response={200: TokenRequestSchemaOut, 401: ErrorSchemaOut}, auth=None)
 def get_jwt_token(request, credentials: TokenRequestSchemaIn):
     """
@@ -69,6 +73,7 @@ def get_jwt_token(request, credentials: TokenRequestSchemaIn):
     expires_in = int(timedelta(hours=4).total_seconds())
 
     return (200, {"access_token": access_token, "refresh_token": refresh_token, "expires_in": expires_in})
+
 
 @router.post("/jwt-token/refresh/", response={200: TokenRequestSchemaOut, 401: ErrorSchemaOut}, auth=None)
 def refresh_jwt_token(request, credentials: RefreshTokenRequestSchemaIn):

@@ -3,6 +3,11 @@ class LogicError(Exception):
     status_code = 500
 
 
+class AuthenticationError(LogicError):
+    """Raised when authentication fails"""
+    status_code = 401
+
+
 class ResourceNotFoundError(LogicError):
     """Raised when attempting to access a resource that does not exist"""
     status_code = 404
