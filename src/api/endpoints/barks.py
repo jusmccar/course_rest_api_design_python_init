@@ -1,12 +1,12 @@
 from ninja import Router
 from uuid import UUID
 
-from api.logic.exceptions import get_error_response
 from api.logic.bark_logic import handle_barks_list
 from api.logic.bark_logic import handle_create_bark
 from api.logic.bark_logic import handle_delete_bark
 from api.logic.bark_logic import handle_get_bark
 from api.logic.bark_logic import handle_update_bark
+from api.logic.exceptions import get_error_response
 from api.schemas.bark_schemas import BarkCreateUpdateSchemaIn
 from api.schemas.bark_schemas import BarkSchemaOut
 from api.schemas.common_schemas import ErrorSchemaOut
