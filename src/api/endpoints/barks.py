@@ -1,11 +1,11 @@
 from ninja import Router
 from uuid import UUID
 
+from api.logic.bark_logic import handle_create_bark
 from api.schemas.bark_schemas import BarkCreateUpdateSchemaIn
 from api.schemas.bark_schemas import BarkSchemaOut
 from api.schemas.common_schemas import ErrorSchemaOut
 from core.models import BarkModel
-from core.models import DogUserModel
 
 router = Router()
 
@@ -17,16 +17,18 @@ def barks_list(request):
     """
     return BarkModel.objects.select_related("user").all()
 
+
 @router.post("/", response={201: BarkSchemaOut})
 def create_bark(request, bark: BarkCreateUpdateSchemaIn):
     """
     Bark create endpoint that creates a single bark.
     """
+    user_obj = request.auth
     data = bark.dict()
-    data['user_id'] = request.auth.id
-    obj = BarkModel.objects.create(**data)
+    bark_obj = handle_create_bark(user_obj, data)
 
-    return (201, obj)
+    return (201, bark_obj)
+
 
 @router.get("/{bark_id}/", response={200: BarkSchemaOut, 404: ErrorSchemaOut}, auth=None)
 def get_bark(request, bark_id: UUID):
@@ -39,6 +41,7 @@ def get_bark(request, bark_id: UUID):
         return (404, {"error": "Bark not found"})
 
     return (200, obj)
+
 
 @router.put("/{bark_id}/", response={200: BarkSchemaOut, 404: ErrorSchemaOut})
 def update_bark(request, bark_id: UUID, bark: BarkCreateUpdateSchemaIn):
@@ -58,6 +61,7 @@ def update_bark(request, bark_id: UUID, bark: BarkCreateUpdateSchemaIn):
     obj.save()
 
     return (200, obj)
+
 
 @router.delete("/{bark_id}/", response={204: None, 404: ErrorSchemaOut})
 def delete_bark(request, bark_id: UUID):
