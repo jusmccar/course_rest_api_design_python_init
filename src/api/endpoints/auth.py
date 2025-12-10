@@ -7,6 +7,7 @@ from django.utils import timezone
 from ninja import Router
 
 from api.logic.auth_logic import handle_get_token
+from api.logic.auth_logic import handle_refresh_token
 from api.logic.exceptions import get_error_response
 from api.schemas.auth_schemas import RefreshTokenRequestSchemaIn
 from api.schemas.auth_schemas import TokenRequestSchemaIn
@@ -42,20 +43,16 @@ def refresh_token(request, credentials: RefreshTokenRequestSchemaIn):
     """
     Token endpoint that refreshes a token.
     """
-    obj = AuthTokenModel.objects.filter(key=credentials.refresh_token, token_type=AuthTokenModel.TOKEN_TYPE_REFRESH, is_active=True).first()
+    refresh_token = credentials.refresh_token
 
-    if not obj:
-        return (401, {"error": "Invalid refresh token"})
+    try:
+        data = handle_refresh_token(refresh_token)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
 
-    if obj.is_expired():
-        return (401, {"error": "Expired refresh token"})
+        return (status_code, error_response)
 
-    AuthTokenModel.objects.filter(user=obj.user).delete()
-    access_token = AuthTokenModel.objects.create(user=obj.user, token_type=AuthTokenModel.TOKEN_TYPE_ACCESS)
-    refresh_token = AuthTokenModel.objects.create(user=obj.user, token_type=AuthTokenModel.TOKEN_TYPE_REFRESH)
-    expires_in = int((access_token.expires - timezone.now()).total_seconds())
-
-    return (200, {"access_token": access_token.key, "refresh_token": refresh_token.key, "expires_in": expires_in})
+    return (200, data)
 
 
 @router.post("/jwt-token/", response={200: TokenRequestSchemaOut, 401: ErrorSchemaOut}, auth=None)
