@@ -23,7 +23,7 @@ def dog_users_list(request):
     """
     users = handle_dog_users_list()
 
-    return (200, users)
+    return users
 
 
 @router.post("/", response={201: DogUserWithTokenSchemaOut, 409: ErrorSchemaOut}, auth=None)
