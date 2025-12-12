@@ -1,4 +1,5 @@
 from ninja import Router
+from ninja.pagination import paginate
 from uuid import UUID
 
 from api.logic.bark_logic import handle_barks_list
@@ -15,6 +16,7 @@ router = Router()
 
 
 @router.get("/", response=list[BarkSchemaOut], auth=None)
+@paginate
 def barks_list(request):
     """
     Bark list endpoint that returns a list of barks.
