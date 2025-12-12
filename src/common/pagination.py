@@ -90,6 +90,8 @@ class TimestampCursorPagination(PaginationBase):
         items: list[Any]
         next: str | None = None
         next_cursor: str | None = None
+        previous: str | None = None
+        previous_cursor: str | None = None
 
     def paginate_queryset(self, queryset, pagination: Input, **params):
         limit = min(pagination.limit, 100)
@@ -130,10 +132,38 @@ class TimestampCursorPagination(PaginationBase):
             next_timestamp = results[-1].created_at.isoformat()
             next_cursor = self.encode_cursor({"timestamp": next_timestamp})
 
+        # Generate the previous cursor
+        previous_cursor = None
+
+        if results and cursor:
+            # Step 1: Find the timestamp of the first item in our current results
+            first_timestamp = results[0].created_at.isoformat()
+
+            # Step 2: We need to find items NEWER than our current page
+            prev_items = list(
+                queryset.filter(created_at__gt=first_timestamp).order_by("created_at")[
+                    :limit
+                ]
+            )
+
+            # Step 3: If we found any items, the last one will be the oldest of the newer items
+            if prev_items:
+                oldest_prev_item = (
+                    prev_items[-1].created_at.isoformat() if prev_items else None
+                )
+
+                if oldest_prev_item:
+                    # Step 4: Create the encoded cursor for this item
+                    previous_cursor = self.encode_cursor(
+                        {"timestamp": oldest_prev_item}
+                    )
+
         return {
             "items": results,
             "next": f"{base_url}?cursor={next_cursor}&limit={limit}" if next_cursor else None,
-            "next_cursor": next_cursor
+            "next_cursor": next_cursor,
+            "previous": f"{base_url}?cursor={previous_cursor}&limit={limit}" if previous_cursor else None,
+            "previous_cursor": previous_cursor,
         }
 
     def decode_cursor(self, cursor):
