@@ -13,13 +13,13 @@ from api.schemas.user_schemas import DogUserCreateSchemaIn
 from api.schemas.user_schemas import DogUserSchemaOut
 from api.schemas.user_schemas import DogUserUpdateSchemaIn
 from api.schemas.user_schemas import DogUserWithTokenSchemaOut
-from common.pagination import SkipPagination
+from common.pagination import TimestampCursorPagination
 
 router = Router()
 
 
 @router.get("/", response=list[DogUserSchemaOut])
-@paginate(SkipPagination)
+@paginate(TimestampCursorPagination)
 def dog_users_list(request):
     """
     Dog users list endpoint that returns a list of dog users.
