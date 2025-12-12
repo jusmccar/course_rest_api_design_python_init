@@ -1,7 +1,7 @@
-from typing import Any
-from ninja.pagination import PaginationBase
+from django.http import HttpRequest
 from ninja import Schema
-
+from ninja.pagination import PaginationBase
+from typing import Any
 
 class SkipPagination(PaginationBase):
     """
@@ -12,21 +12,62 @@ class SkipPagination(PaginationBase):
         skip: int = 0
         per_page: int = 5
 
-
     class Output(Schema):
         items: list[Any]
         total: int
         pages: int
         per_page: int
         skip: int
+        next: str | None = None
+        previous: str | None = None
 
     def paginate_queryset(self, queryset, pagination: Input, **params):
         skip = pagination.skip
         per_page = pagination.per_page
+        count = queryset.count()
+
+        # Build the base URL from the current request
+        request: HttpRequest = params.get('request')
+        base_url = self._get_base_url(request)
+
+        # Calculate next link (if there are more items)
+        next_link = None
+        if skip + per_page < count:
+            # Your code to construct next link
+            next_skip = skip + per_page
+            next_link = f"{base_url}?skip={next_skip}&per_page={per_page}"
+
+        # Calculate previous link (if not on first page)
+        previous_link = None
+        if skip > 0:
+            # Your code to construct previous link
+            previous_skip = max(0, skip - per_page)
+            previous_link = f"{base_url}?skip={previous_skip}&per_page={per_page}"
+
+        # Return response with navigation links
         return {
             'items': queryset[skip : skip + per_page],
             'total': queryset.count(),
             'pages': (queryset.count() + per_page - 1) // per_page,
             'per_page': per_page,
             'skip': skip,
+            'next': next_link,
+            'previous': previous_link,
         }
+
+    def _get_base_url(self, request):
+        """Build the base URL without query parameters"""
+        if not request:
+            return ''
+
+        # Get the full path without query parameters
+        path = request.path
+
+        # Get the scheme (http or https)
+        scheme = 'https' if request.is_secure() else 'http'
+
+        # Get the host
+        host = request.get_host()
+
+        # Construct the base URL
+        return f"{scheme}://{host}{path}"
