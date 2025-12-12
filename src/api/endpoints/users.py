@@ -1,4 +1,5 @@
 from ninja import Router
+from ninja.pagination import PageNumberPagination
 from ninja.pagination import paginate
 from uuid import UUID
 
@@ -18,7 +19,7 @@ router = Router()
 
 
 @router.get("/", response=list[DogUserSchemaOut])
-@paginate
+@paginate(PageNumberPagination)
 def dog_users_list(request):
     """
     Dog users list endpoint that returns a list of dog users.

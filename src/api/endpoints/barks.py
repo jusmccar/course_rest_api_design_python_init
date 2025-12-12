@@ -1,4 +1,5 @@
 from ninja import Router
+from ninja.pagination import PageNumberPagination
 from ninja.pagination import paginate
 from uuid import UUID
 
@@ -16,7 +17,7 @@ router = Router()
 
 
 @router.get("/", response=list[BarkSchemaOut], auth=None)
-@paginate
+@paginate(PageNumberPagination)
 def barks_list(request):
     """
     Bark list endpoint that returns a list of barks.
