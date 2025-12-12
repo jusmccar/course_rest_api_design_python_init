@@ -1,4 +1,5 @@
 from ninja import Router
+from ninja.pagination import paginate
 from uuid import UUID
 
 from api.logic.exceptions import get_error_response
@@ -17,6 +18,7 @@ router = Router()
 
 
 @router.get("/", response=list[DogUserSchemaOut])
+@paginate
 def dog_users_list(request):
     """
     Dog users list endpoint that returns a list of dog users.
