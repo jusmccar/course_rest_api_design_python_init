@@ -11,13 +11,12 @@ from api.logic.exceptions import get_error_response
 from api.schemas.bark_schemas import BarkCreateUpdateSchemaIn
 from api.schemas.bark_schemas import BarkSchemaOut
 from api.schemas.common_schemas import ErrorSchemaOut
-from common.pagination import SkipPagination
 
 router = Router()
 
 
 @router.get("/", response=list[BarkSchemaOut], auth=None)
-@paginate(SkipPagination)
+@paginate
 def barks_list(request):
     """
     Bark list endpoint that returns a list of barks.
