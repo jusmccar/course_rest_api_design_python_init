@@ -4,11 +4,14 @@ from core.models import AuthTokenModel
 from core.models import DogUserModel
 
 
-def handle_dog_users_list(favorite_toy: str | None = None):
+def handle_dog_users_list(username: str | None = None, favorite_toy: str | None = None):
     """
     Returns a list of dog users.
     """
     users = DogUserModel.objects.all()
+
+    if username is not None:
+        users = users.filter(username__icontains=username)
 
     if favorite_toy is not None:
         users = users.filter(favorite_toy__icontains=favorite_toy)
