@@ -1,3 +1,4 @@
+from ninja import Query
 from ninja import Router
 from ninja.pagination import paginate
 from uuid import UUID
@@ -13,16 +14,19 @@ from api.schemas.user_schemas import DogUserCreateSchemaIn
 from api.schemas.user_schemas import DogUserSchemaOut
 from api.schemas.user_schemas import DogUserUpdateSchemaIn
 from api.schemas.user_schemas import DogUserWithTokenSchemaOut
+from common.filters import UsersFilter
 
 router = Router()
 
 
 @router.get("/", response=list[DogUserSchemaOut])
 @paginate
-def dog_users_list(request, username: str | None = None, favorite_toy: str | None = None):
+def dog_users_list(request, filters: Query[UsersFilter]):
     """
     Dog users list endpoint that returns a list of dog users.
     """
+    username = filters.username
+    favorite_toy = filters.favorite_toy
     users = handle_dog_users_list(username=username, favorite_toy=favorite_toy)
 
     return users
