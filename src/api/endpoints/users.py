@@ -21,13 +21,11 @@ router = Router()
 
 @router.get("/", response=list[DogUserSchemaOut])
 @paginate
-def dog_users_list(request, filters: Query[UsersFilter]):
+def dog_users_list(request, filters: UsersFilter = Query(...)):
     """
     Dog users list endpoint that returns a list of dog users.
     """
-    username = filters.username
-    favorite_toy = filters.favorite_toy
-    users = handle_dog_users_list(username=username, favorite_toy=favorite_toy)
+    users = handle_dog_users_list(filters=filters)
 
     return users
 

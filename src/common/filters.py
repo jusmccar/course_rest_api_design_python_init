@@ -1,10 +1,10 @@
-from typing import Optional
-from ninja import Schema
+from ninja import Field
+from ninja import FilterSchema
 
 
-class UsersFilter(Schema):
+class UsersFilter(FilterSchema):
     """
     Filter schema for user endpoints.
     """
-    username: str | None = None
-    favorite_toy: str | None = None
+    username: str | None = Field(None, q="username__icontains")
+    favorite_toy: str | None = Field(None, q="favorite_toy__icontains")
