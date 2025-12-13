@@ -4,11 +4,16 @@ from core.models import AuthTokenModel
 from core.models import DogUserModel
 
 
-def handle_dog_users_list():
+def handle_dog_users_list(favorite_toy: str | None = None):
     """
-    Returns a list of all dog users.
+    Returns a list of dog users.
     """
-    return DogUserModel.objects.all()
+    users = DogUserModel.objects.all()
+
+    if favorite_toy is not None:
+        users = users.filter(favorite_toy=favorite_toy)
+
+    return users
 
 
 def handle_create_dog_user(username: str, password: str) -> tuple[DogUserModel, AuthTokenModel]:
