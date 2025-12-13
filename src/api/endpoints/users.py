@@ -23,7 +23,7 @@ def dog_users_list(request, favorite_toy: str | None = None):
     """
     Dog users list endpoint that returns a list of dog users.
     """
-    users = handle_dog_users_list(favorite_toy)
+    users = handle_dog_users_list(favorite_toy=favorite_toy)
 
     return users
 
@@ -34,7 +34,7 @@ def create_dog_user(request, user: DogUserCreateSchemaIn):
     Dog user create endpoint that creates a single dog user.
     """
     try:
-        user_obj, token = handle_create_dog_user(user.username, user.password)
+        user_obj, token = handle_create_dog_user(username=user.username, password=user.password)
     except Exception as e:
         status_code, error_response = get_error_response(e)
 
@@ -49,7 +49,7 @@ def get_current_user(request):
     Dog user detail endpoint that returns the currently authenticated dog user.
     """
     user_obj = request.auth
-    user_obj = handle_get_current_user(user_obj)
+    user_obj = handle_get_current_user(user=user_obj)
 
     return (200, user_obj)
 
@@ -63,7 +63,7 @@ def update_me(request, user: DogUserUpdateSchemaIn):
     data = user.dict(exclude_unset=True)
 
     try:
-        user_obj = handle_update_me(user_obj, data)
+        user_obj = handle_update_me(user=user_obj, data=data)
     except Exception as e:
         status_code, error_response = get_error_response(e)
 
@@ -78,7 +78,7 @@ def get_dog_user(request, user_id: UUID):
     Dog user detail endpoint that returns a single dog user.
     """
     try:
-        user_obj = handle_get_dog_user(user_id)
+        user_obj = handle_get_dog_user(user_id=user_id)
     except Exception as e:
         status_code, error_response = get_error_response(e)
 

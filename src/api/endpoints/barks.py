@@ -33,7 +33,7 @@ def create_bark(request, bark: BarkCreateUpdateSchemaIn):
     """
     user_obj = request.auth
     data = bark.dict()
-    bark_obj = handle_create_bark(user_obj, data)
+    bark_obj = handle_create_bark(user=user_obj, data=data)
 
     return (201, bark_obj)
 
@@ -44,7 +44,7 @@ def get_bark(request, bark_id: UUID):
     Bark detail endpoint that returns a single bark.
     """
     try:
-        bark_obj = handle_get_bark(bark_id)
+        bark_obj = handle_get_bark(bark_id=bark_id)
     except Exception as e:
         status_code, error_response = get_error_response(e)
 
@@ -62,7 +62,7 @@ def update_bark(request, bark_id: UUID, bark: BarkCreateUpdateSchemaIn):
     data = bark.dict()
 
     try:
-        bark_obj = handle_update_bark(bark_id, user_obj, data)
+        bark_obj = handle_update_bark(bark_id=bark_id, user=user_obj, data=data)
     except Exception as e:
         status_code, error_response = get_error_response(e)
 
@@ -79,7 +79,7 @@ def delete_bark(request, bark_id: UUID):
     user_obj = request.auth
 
     try:
-        handle_delete_bark(bark_id, user_obj)
+        handle_delete_bark(bark_id=bark_id, user=user_obj)
     except Exception as e:
         status_code, error_response = get_error_response(e)
 
