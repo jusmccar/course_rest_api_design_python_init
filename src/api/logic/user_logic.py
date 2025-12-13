@@ -11,7 +11,7 @@ def handle_dog_users_list(favorite_toy: str | None = None):
     users = DogUserModel.objects.all()
 
     if favorite_toy is not None:
-        users = users.filter(favorite_toy=favorite_toy)
+        users = users.filter(favorite_toy__icontains=favorite_toy)
 
     return users
 
