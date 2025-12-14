@@ -8,3 +8,10 @@ class UsersFilter(FilterSchema):
     """
     username: str | None = Field(None, q="username__icontains")
     favorite_toy: str | None = Field(None, q="favorite_toy__icontains")
+
+
+class BarksFilter(FilterSchema):
+    """
+    Filter schema for user endpoints.
+    """
+    message: str | None = Field(None, q="message__icontains")

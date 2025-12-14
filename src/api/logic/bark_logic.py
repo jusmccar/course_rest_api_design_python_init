@@ -1,10 +1,16 @@
+from django.db.models import QuerySet
+
 from api.logic.exceptions import ResourceNotFoundError
+from common.filters import BarksFilter
 from core.models import BarkModel
 from core.models import DogUserModel
 
 
-def handle_barks_list() -> list[BarkModel]:
-    return BarkModel.objects.select_related("user").all()
+def handle_barks_list(filters: BarksFilter) -> QuerySet[BarkModel]:
+    barks = BarkModel.objects.select_related("user").all()
+    barks = filters.filter(barks)
+
+    return barks
 
 
 def handle_create_bark(user: DogUserModel, data: dict) -> BarkModel:
