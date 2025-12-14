@@ -1,6 +1,7 @@
 from django.db.models import QuerySet
 
 from api.logic.exceptions import ResourceNotFoundError
+from common.filters import apply_ordering
 from common.filters import BarksFilter
 from core.models import BarkModel
 from core.models import DogUserModel
@@ -12,6 +13,8 @@ def handle_barks_list(filters: BarksFilter) -> QuerySet[BarkModel]:
 
     if filters.trending:
         barks = barks.order_by("-sniff_count")
+    elif filters.order_by:
+        barks = apply_ordering(queryset=barks, order_by=filters.order_by, model_class=BarkModel)
 
     return barks
 
