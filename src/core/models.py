@@ -20,7 +20,7 @@ class BaseModel(models.Model):
 
 
 class DogUserModel(AbstractUser, BaseModel):
-    """Custom user model for dog users."""
+    """Custom user model for dog users"""
 
     favorite_toy = models.CharField(max_length=100, blank=True)
 
@@ -31,8 +31,9 @@ class DogUserModel(AbstractUser, BaseModel):
     def __str__(self):
         return self.username
 
+
 class BarkModel(BaseModel):
-    """Custom bark model for barks."""
+    """Custom bark model for barks"""
 
     message = models.CharField(max_length=200)
     user = models.ForeignKey(
@@ -40,6 +41,7 @@ class BarkModel(BaseModel):
         on_delete=models.CASCADE,
         related_name="barks",
     )
+    sniff_count = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name = "Bark"
@@ -47,6 +49,27 @@ class BarkModel(BaseModel):
 
     def __str__(self):
         return f"{self.user.username} - {self.message[:20]}..."
+
+
+class UserSniffModel(BaseModel):
+    """Custom sniff model for sniffs"""
+
+    user = models.ForeignKey(
+        DogUserModel,
+        on_delete=models.CASCADE,
+        related_name="sniffs",
+    )
+    bark = models.ForeignKey(
+        BarkModel,
+        on_delete=models.CASCADE,
+        related_name="user_sniffs",
+    )
+
+    class Meta:
+        verbose_name = "User Sniff"
+        verbose_name_plural = "User Sniffs"
+        unique_together = ("user", "bark")
+
 
 class AuthTokenModel(BaseModel):
     """Represents an authentication token for a user"""

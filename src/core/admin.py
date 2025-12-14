@@ -3,6 +3,7 @@ from django.contrib import admin
 from core.models import AuthTokenModel
 from core.models import BarkModel
 from core.models import DogUserModel
+from core.models import UserSniffModel
 
 @admin.register(DogUserModel)
 class DogUserAdmin(admin.ModelAdmin):
@@ -10,6 +11,10 @@ class DogUserAdmin(admin.ModelAdmin):
 
 @admin.register(BarkModel)
 class BarkAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(UserSniffModel)
+class UserSniffAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(AuthTokenModel)
