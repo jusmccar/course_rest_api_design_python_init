@@ -10,6 +10,9 @@ def handle_barks_list(filters: BarksFilter) -> QuerySet[BarkModel]:
     barks = BarkModel.objects.select_related("user").all()
     barks = filters.filter(barks)
 
+    if filters.trending:
+        barks = barks.order_by("-sniff_count")
+
     return barks
 
 
