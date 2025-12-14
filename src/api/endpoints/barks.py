@@ -1,7 +1,8 @@
+from uuid import UUID
+
 from ninja import Query
 from ninja import Router
 from ninja.pagination import paginate
-from uuid import UUID
 
 from api.logic.bark_logic import handle_barks_list
 from api.logic.bark_logic import handle_create_bark

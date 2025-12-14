@@ -1,7 +1,8 @@
+from uuid import UUID
+
 from ninja import Query
 from ninja import Router
 from ninja.pagination import paginate
-from uuid import UUID
 
 from api.logic.exceptions import get_error_response
 from api.logic.user_logic import handle_create_dog_user
