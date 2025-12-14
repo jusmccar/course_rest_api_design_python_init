@@ -31,7 +31,7 @@ class BarkSchemaOut(ModelSchema):
 
     class Meta:
         model = BarkModel
-        fields = ["id", "message"]
+        fields = ["id", "message", "sniff_count"]
 
     @staticmethod
     def resolve_created_time(obj):
