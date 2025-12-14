@@ -2,6 +2,7 @@ from django.db.models import QuerySet
 
 from api.logic.exceptions import DuplicateResourceError
 from api.logic.exceptions import ResourceNotFoundError
+from common.filters import apply_ordering
 from common.filters import UsersFilter
 from core.models import AuthTokenModel
 from core.models import DogUserModel
@@ -13,6 +14,9 @@ def handle_dog_users_list(filters: UsersFilter) -> QuerySet[DogUserModel]:
     """
     users = DogUserModel.objects.all()
     users = filters.filter(users)
+
+    if filters.order_by:
+        users = apply_ordering(queryset=users, order_by=filters.order_by, model_class=DogUserModel)
 
     return users
 
