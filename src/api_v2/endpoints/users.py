@@ -1,0 +1,110 @@
+from uuid import UUID
+
+from ninja import File
+from ninja import Query
+from ninja import Router
+from ninja.files import UploadedFile
+from ninja.pagination import paginate
+
+from api_v2.logic.exceptions import get_error_response
+from api_v2.logic.user_logic import handle_create_dog_user
+from api_v2.logic.user_logic import handle_dog_users_list
+from api_v2.logic.user_logic import handle_get_current_user
+from api_v2.logic.user_logic import handle_get_dog_user
+from api_v2.logic.user_logic import handle_update_me
+from api_v2.logic.user_logic import handle_upload_profile_image
+from api_v2.schemas.common_schemas import ErrorSchemaOut
+from api_v2.schemas.user_schemas import DogUserCreateSchemaIn
+from api_v2.schemas.user_schemas import DogUserSchemaOut
+from api_v2.schemas.user_schemas import DogUserUpdateSchemaIn
+from api_v2.schemas.user_schemas import DogUserWithTokenSchemaOut
+from common.filters import UsersFilter
+
+router = Router()
+
+
+@router.get("/", response=list[DogUserSchemaOut])
+@paginate
+def dog_users_list(request, filters: UsersFilter = Query(...)):
+    """
+    Dog users list endpoint that returns a list of dog users.
+    """
+    users = handle_dog_users_list(filters=filters)
+
+    return users
+
+
+@router.post("/", response={201: DogUserWithTokenSchemaOut, 409: ErrorSchemaOut}, auth=None)
+def create_dog_user(request, user: DogUserCreateSchemaIn):
+    """
+    Dog user create endpoint that creates a single dog user.
+    """
+    try:
+        user_obj, token = handle_create_dog_user(username=user.username, password=user.password)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
+
+        return (status_code, error_response)
+
+    return (201, {"user": user_obj, "token": token.key})
+
+
+@router.get("/me/", response={200: DogUserSchemaOut})
+def get_current_user(request):
+    """
+    Dog user detail endpoint that returns the currently authenticated dog user.
+    """
+    user_obj = request.auth
+    user_obj = handle_get_current_user(user=user_obj)
+
+    return (200, user_obj)
+
+
+@router.patch("/me/", response={200: DogUserSchemaOut, 409: ErrorSchemaOut})
+def update_me(request, user: DogUserUpdateSchemaIn):
+    """
+    Dog user update endpoint that updates the currently authenticated dog user.
+    """
+    user_obj = request.auth
+    data = user.dict(exclude_unset=True)
+
+    try:
+        user_obj = handle_update_me(user=user_obj, data=data)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
+
+        return (status_code, error_response)
+
+    return (200, user_obj)
+
+
+@router.post("/me/profile-image/", response={200: DogUserSchemaOut, 400: ErrorSchemaOut})
+def upload_profile_image(request, image: UploadedFile = File(...)):
+    """
+    Endpoint for uploading a profile image for the current user.
+    """
+    user_obj = request.auth
+
+    try:
+        user_obj = handle_upload_profile_image(user=user_obj, image=image)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
+
+        return (status_code, error_response)
+
+    return (200, user_obj)
+
+
+@router.get("/{user_id}/", response={200: DogUserSchemaOut, 404: ErrorSchemaOut})
+def get_dog_user(request, user_id: UUID):
+    """
+    Dog user detail endpoint that returns a single dog user.
+    """
+    try:
+        user_obj = handle_get_dog_user(user_id=user_id)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
+
+        return (status_code, error_response)
+
+    return (200, user_obj)

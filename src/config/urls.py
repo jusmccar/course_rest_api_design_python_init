@@ -20,11 +20,13 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 from config.api import api
+from config.api import api_v2
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", api.urls),
+    path("api/v2/", api_v2.urls),
 ]
 
 if settings.DEBUG:
