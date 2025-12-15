@@ -1,8 +1,17 @@
 from ninja import ModelSchema
+from ninja import Schema
 from pydantic import field_validator
 
 from api.schemas.user_schemas import DogUserSchemaOut
 from core.models import BarkModel
+
+
+class BarkCsvExportSchema(Schema):
+    """Schema for CSV export data"""
+    message: str
+    sniff_count: int
+    created_at: str
+    username: str
 
 
 class BarkCreateUpdateSchemaIn(ModelSchema):

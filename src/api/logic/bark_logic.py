@@ -1,4 +1,8 @@
+import csv
+from io import StringIO
+
 from django.db.models import QuerySet
+from django.http import HttpResponse
 
 from api.logic.exceptions import ResourceNotFoundError
 from common.filters import apply_ordering
@@ -24,6 +28,42 @@ def handle_create_bark(user: DogUserModel, data: dict) -> BarkModel:
     bark = BarkModel.objects.create(**data)
 
     return bark
+
+
+def handle_export_top_barks_csv(user: DogUserModel) -> HttpResponse:
+    """
+    Handle the logic for exporting user's top 10 sniffed barks as CSV.
+    Returns an HttpResponse with CSV content.
+    """
+    # Get the user's top 10 most sniffed barks
+    top_barks = BarkModel.objects.select_related("user").filter(user=user, sniff_count__gt=0).order_by("-sniff_count")[:10]
+
+    # Create CSV content
+    output = StringIO()
+    writer = csv.writer(output)
+
+    # Write CSV header
+    writer.writerow([
+        "Message",
+        "Sniff Count",
+        "Created At",
+        "Username",
+    ])
+
+    # Write bark data
+    for bark in top_barks:
+        writer.writerow([
+            bark.message,
+            bark.sniff_count,
+            bark.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            bark.user.username,
+        ])
+
+    # Create HTTP response with CSV content
+    response = HttpResponse(output.getvalue(), content_type="text/csv")
+    response["Content-Disposition"] = 'attachment; filename="top_barks.csv"'
+
+    return response
 
 
 def handle_get_bark(bark_id: str) -> BarkModel:

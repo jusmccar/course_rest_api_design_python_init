@@ -7,6 +7,7 @@ from ninja.pagination import paginate
 from api.logic.bark_logic import handle_barks_list
 from api.logic.bark_logic import handle_create_bark
 from api.logic.bark_logic import handle_delete_bark
+from api.logic.bark_logic import handle_export_top_barks_csv
 from api.logic.bark_logic import handle_get_bark
 from api.logic.bark_logic import handle_update_bark
 from api.logic.exceptions import get_error_response
@@ -39,6 +40,23 @@ def create_bark(request, bark: BarkCreateUpdateSchemaIn):
     bark_obj = handle_create_bark(user=user_obj, data=data)
 
     return (201, bark_obj)
+
+
+@router.get("/top-export/")
+def export_top_barks_csv(request):
+    """
+    Endpoint for downloading a CSV of the user's top 10 most sniffed barks.
+    """
+    user_obj = request.auth
+
+    try:
+        csv_response = handle_export_top_barks_csv(user=user_obj)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
+
+        return (status_code, error_response)
+
+    return csv_response
 
 
 @router.get("/{bark_id}/", response={200: BarkSchemaOut, 404: ErrorSchemaOut}, auth=None)
