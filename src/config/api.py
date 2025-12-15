@@ -1,4 +1,6 @@
+from django.conf import settings
 from ninja import NinjaAPI
+from ninja.throttling import AnonRateThrottle
 
 from api.endpoints.auth import router as auth_router
 from api.endpoints.barks import router as barks_router
@@ -11,8 +13,10 @@ from api_v2.endpoints.users import router as users_router_v2
 from common.auth.jwt_auth import JWTAuth
 from common.auth.token import TokenAuth
 
-api = NinjaAPI(auth=[TokenAuth(), JWTAuth()], title="Social Dog API", version="1.0.0")
-api_v2 = NinjaAPI(auth=[TokenAuth(), JWTAuth()], title="Social Dog API v2", version="2.0.0")
+throttle_config = [] if getattr(settings, 'TESTING', False) else [AnonRateThrottle("10/m")]
+
+api = NinjaAPI(auth=[TokenAuth(), JWTAuth()], title="Social Dog API", version="1.0.0", throttle=throttle_config)
+api_v2 = NinjaAPI(auth=[TokenAuth(), JWTAuth()], title="Social Dog API v2", version="2.0.0", throttle=throttle_config)
 
 api.add_router("/auth", auth_router, tags=["auth"])
 api.add_router("/users", users_router, tags=["users"])
