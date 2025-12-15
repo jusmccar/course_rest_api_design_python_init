@@ -1,8 +1,15 @@
+from ninja import File
 from ninja import ModelSchema
 from ninja import Schema
+from ninja.files import UploadedFile
 from pydantic import field_validator
 
 from core.models import DogUserModel
+
+
+class ProfileImageUploadSchemaIn(Schema):
+    """Schema for profile image upload"""
+    image: UploadedFile = File(...)
 
 
 class DogUserCreateSchemaIn(ModelSchema):
@@ -37,10 +44,19 @@ class DogUserUpdateSchemaIn(ModelSchema):
 
 class DogUserSchemaOut(ModelSchema):
     """Schema for dog user responses"""
+    profile_image_url: str | None = None
 
     class Meta:
         model = DogUserModel
         fields = ["id", "username", "favorite_toy"]
+
+    @staticmethod
+    def resolve_profile_image_url(obj):
+        """Resolve the profile image URL"""
+        if not obj.profile_image or not hasattr(obj.profile_image, "url"):
+            return None
+
+        return obj.profile_image.url
 
 
 class DogUserWithTokenSchemaOut(Schema):
