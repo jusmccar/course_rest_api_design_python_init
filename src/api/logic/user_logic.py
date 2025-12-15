@@ -59,18 +59,6 @@ def handle_update_me(user: DogUserModel, data: dict) -> DogUserModel:
     return user
 
 
-def handle_get_dog_user(user_id: int) -> DogUserModel:
-    """
-    Returns a single dog user.
-    """
-    user = DogUserModel.objects.filter(id=user_id).first()
-
-    if not user:
-        raise ResourceNotFoundError("Dog user not found")
-
-    return user
-
-
 def handle_upload_profile_image(user: DogUserModel, image: UploadedFile) -> DogUserModel:
     """
     Handle the logic for uploading a profile image.
@@ -96,5 +84,17 @@ def handle_upload_profile_image(user: DogUserModel, image: UploadedFile) -> DogU
     # Save new image
     user.profile_image = image
     user.save()
+
+    return user
+
+
+def handle_get_dog_user(user_id: int) -> DogUserModel:
+    """
+    Returns a single dog user.
+    """
+    user = DogUserModel.objects.filter(id=user_id).first()
+
+    if not user:
+        raise ResourceNotFoundError("Dog user not found")
 
     return user

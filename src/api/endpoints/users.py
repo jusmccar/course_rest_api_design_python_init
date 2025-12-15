@@ -78,21 +78,6 @@ def update_me(request, user: DogUserUpdateSchemaIn):
     return (200, user_obj)
 
 
-@router.get("/{user_id}/", response={200: DogUserSchemaOut, 404: ErrorSchemaOut})
-def get_dog_user(request, user_id: UUID):
-    """
-    Dog user detail endpoint that returns a single dog user.
-    """
-    try:
-        user_obj = handle_get_dog_user(user_id=user_id)
-    except Exception as e:
-        status_code, error_response = get_error_response(e)
-
-        return (status_code, error_response)
-
-    return (200, user_obj)
-
-
 @router.post("/me/profile-image/", response={200: DogUserSchemaOut, 400: ErrorSchemaOut})
 def upload_profile_image(request, image: UploadedFile = File(...)):
     """
@@ -102,6 +87,21 @@ def upload_profile_image(request, image: UploadedFile = File(...)):
 
     try:
         user_obj = handle_upload_profile_image(user=user_obj, image=image)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
+
+        return (status_code, error_response)
+
+    return (200, user_obj)
+
+
+@router.get("/{user_id}/", response={200: DogUserSchemaOut, 404: ErrorSchemaOut})
+def get_dog_user(request, user_id: UUID):
+    """
+    Dog user detail endpoint that returns a single dog user.
+    """
+    try:
+        user_obj = handle_get_dog_user(user_id=user_id)
     except Exception as e:
         status_code, error_response = get_error_response(e)
 
