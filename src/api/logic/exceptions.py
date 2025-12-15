@@ -3,6 +3,11 @@ class LogicError(Exception):
     status_code = 500
 
 
+class InvalidFileError(LogicError):
+    """Raised when file is invalid"""
+    status_code = 400
+
+
 class AuthenticationError(LogicError):
     """Raised when authentication fails"""
     status_code = 401

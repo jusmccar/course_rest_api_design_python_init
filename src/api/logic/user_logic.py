@@ -1,6 +1,9 @@
+from django.core.files.storage import default_storage
 from django.db.models import QuerySet
+from ninja.files import UploadedFile
 
 from api.logic.exceptions import DuplicateResourceError
+from api.logic.exceptions import InvalidFileError
 from api.logic.exceptions import ResourceNotFoundError
 from common.filters import apply_ordering
 from common.filters import UsersFilter
@@ -64,5 +67,34 @@ def handle_get_dog_user(user_id: int) -> DogUserModel:
 
     if not user:
         raise ResourceNotFoundError("Dog user not found")
+
+    return user
+
+
+def handle_upload_profile_image(user: DogUserModel, image: UploadedFile) -> DogUserModel:
+    """
+    Handle the logic for uploading a profile image.
+    Validates the image and saves it to the user's profile.
+    """
+    # Validate file type
+    allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+
+    if image.content_type not in allowed_types:
+        raise InvalidFileError("Invalid image type")
+
+    # Validate file size (max 5MB)
+    max_size = 5 * 1024 * 1024  # 5MB in bytes
+
+    if image.size > max_size:
+        raise InvalidFileError("Image size too large")
+
+    # Delete old profile image if it exists
+    if user.profile_image:
+        if default_storage.exists(user.profile_image.name):
+            default_storage.delete(user.profile_image.name)
+
+    # Save new image
+    user.profile_image = image
+    user.save()
 
     return user
