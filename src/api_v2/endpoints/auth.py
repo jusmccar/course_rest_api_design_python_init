@@ -1,3 +1,4 @@
+from ninja import Form
 from ninja import Router
 
 from api_v2.logic.auth_logic import handle_get_token
@@ -15,7 +16,7 @@ router = Router()
 
 
 @router.post("/token/", response={200: TokenRequestSchemaOut, 401: ErrorSchemaOut}, auth=None)
-def get_token(request, credentials: TokenRequestSchemaIn):
+def get_token(request, credentials: Form[TokenRequestSchemaIn]):
     """
     Token endpoint that returns a token.
     """
@@ -33,7 +34,7 @@ def get_token(request, credentials: TokenRequestSchemaIn):
 
 
 @router.post("/token/refresh/", response={200: TokenRequestSchemaOut, 401: ErrorSchemaOut}, auth=None)
-def refresh_token(request, credentials: RefreshTokenRequestSchemaIn):
+def refresh_token(request, credentials: Form[RefreshTokenRequestSchemaIn]):
     """
     Token endpoint that refreshes a token.
     """
@@ -50,7 +51,7 @@ def refresh_token(request, credentials: RefreshTokenRequestSchemaIn):
 
 
 @router.post("/jwt-token/", response={200: TokenRequestSchemaOut, 401: ErrorSchemaOut}, auth=None)
-def get_jwt_token(request, credentials: TokenRequestSchemaIn):
+def get_jwt_token(request, credentials: Form[TokenRequestSchemaIn]):
     """
     JWT token endpoint that returns a JWT token.
     """
@@ -68,7 +69,7 @@ def get_jwt_token(request, credentials: TokenRequestSchemaIn):
 
 
 @router.post("/jwt-token/refresh/", response={200: TokenRequestSchemaOut, 401: ErrorSchemaOut}, auth=None)
-def refresh_jwt_token(request, credentials: RefreshTokenRequestSchemaIn):
+def refresh_jwt_token(request, credentials: Form[RefreshTokenRequestSchemaIn]):
     """
     JWT token endpoint that refreshes a JWT token.
     """
