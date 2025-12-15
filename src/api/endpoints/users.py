@@ -1,7 +1,9 @@
 from uuid import UUID
 
+from ninja import File
 from ninja import Query
 from ninja import Router
+from ninja.files import UploadedFile
 from ninja.pagination import paginate
 
 from api.logic.exceptions import get_error_response
@@ -10,6 +12,7 @@ from api.logic.user_logic import handle_dog_users_list
 from api.logic.user_logic import handle_get_current_user
 from api.logic.user_logic import handle_get_dog_user
 from api.logic.user_logic import handle_update_me
+from api.logic.user_logic import handle_upload_profile_image
 from api.schemas.common_schemas import ErrorSchemaOut
 from api.schemas.user_schemas import DogUserCreateSchemaIn
 from api.schemas.user_schemas import DogUserSchemaOut
@@ -82,6 +85,23 @@ def get_dog_user(request, user_id: UUID):
     """
     try:
         user_obj = handle_get_dog_user(user_id=user_id)
+    except Exception as e:
+        status_code, error_response = get_error_response(e)
+
+        return (status_code, error_response)
+
+    return (200, user_obj)
+
+
+@router.post("/me/profile-image/", response={200: DogUserSchemaOut, 400: ErrorSchemaOut})
+def upload_profile_image(request, image: UploadedFile = File(...)):
+    """
+    Endpoint for uploading a profile image for the current user.
+    """
+    user_obj = request.auth
+
+    try:
+        user_obj = handle_upload_profile_image(user=user_obj, image=image)
     except Exception as e:
         status_code, error_response = get_error_response(e)
 
